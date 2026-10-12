@@ -1,0 +1,185 @@
+id: exp-h045-h039-mlp-refit
+hypothesis: H-045
+features:
+- clocks
+- calendar
+- categoricals
+- geometry
+- sequence
+- stand_turnaround
+- arrivals
+- disagreement
+- local_regime
+- name: local_time
+  blocks:
+  - enc
+  clock: utc
+  enc_keys:
+  - hour
+  - op
+  - stand
+  m: 200
+- name: stand_class
+  k: 4
+  min_count: 10
+  seed: 0
+- name: destination
+  blocks:
+  - region
+  - count
+model:
+  name: segmented
+  drop_segment_rows_from_base: true
+  base:
+    name: ensemble
+    weights:
+    - 4
+    - 2
+    - 1
+    - 0.78
+    members:
+    - name: ensemble
+      weights:
+      - 1
+      - 2
+      members:
+      - name: ensemble
+        members:
+        - name: lightgbm
+          num_boost_round: 2686
+          learning_rate: 0.03
+          num_leaves: 255
+          min_data_in_leaf: 200
+          early_stopping: 0
+        - name: lightgbm
+          num_boost_round: 3370
+          learning_rate: 0.03
+          num_leaves: 255
+          min_data_in_leaf: 200
+          seed: 7
+          bagging_seed: 7
+          feature_fraction_seed: 7
+          data_random_seed: 7
+          early_stopping: 0
+        - name: lightgbm
+          num_boost_round: 2987
+          learning_rate: 0.03
+          num_leaves: 255
+          min_data_in_leaf: 200
+          seed: 13
+          bagging_seed: 13
+          feature_fraction_seed: 13
+          data_random_seed: 13
+          early_stopping: 0
+        - name: lightgbm
+          num_boost_round: 3010
+          learning_rate: 0.03
+          num_leaves: 255
+          min_data_in_leaf: 200
+          seed: 21
+          bagging_seed: 21
+          feature_fraction_seed: 21
+          data_random_seed: 21
+          early_stopping: 0
+        - name: lightgbm
+          num_boost_round: 3589
+          learning_rate: 0.03
+          num_leaves: 255
+          min_data_in_leaf: 200
+          seed: 33
+          bagging_seed: 33
+          feature_fraction_seed: 33
+          data_random_seed: 33
+          early_stopping: 0
+      - name: ensemble
+        members:
+        - name: lightgbm
+          num_boost_round: 7800
+          learning_rate: 0.03
+          num_leaves: 255
+          min_data_in_leaf: 200
+          objective: huber
+          alpha: 1000
+          metric: l2
+          early_stopping: 0
+        - name: lightgbm
+          num_boost_round: 7073
+          learning_rate: 0.03
+          num_leaves: 255
+          min_data_in_leaf: 200
+          objective: huber
+          alpha: 1000
+          metric: l2
+          seed: 7
+          bagging_seed: 7
+          feature_fraction_seed: 7
+          data_random_seed: 7
+          early_stopping: 0
+        - name: lightgbm
+          num_boost_round: 8060
+          learning_rate: 0.03
+          num_leaves: 255
+          min_data_in_leaf: 200
+          objective: huber
+          alpha: 1000
+          metric: l2
+          seed: 13
+          bagging_seed: 13
+          feature_fraction_seed: 13
+          data_random_seed: 13
+          early_stopping: 0
+    - name: catboost
+      num_boost_round: 9993
+      early_stopping: 0
+      depth: 9
+      learning_rate: 0.05
+      l2_leaf_reg: 7.0
+      border_count: 254
+      thread_count: 8
+    - name: per_airport
+      min_rows: 2000
+      base:
+        name: lightgbm
+        num_boost_round: 10000
+        learning_rate: 0.03
+        num_leaves: 255
+        min_data_in_leaf: 200
+      rounds:
+        EDDF: 2252
+        EDDM: 1799
+        EGLL: 2860
+        EHAM: 1407
+        LEBL: 2848
+        LEMD: 2421
+        LFPG: 1480
+        LIRF: 1010
+        LSZH: 2309
+        LTFM: 1957
+    - name: mlp
+      hidden:
+      - 512
+      - 256
+      - 128
+      dropout: 0.1
+      learning_rate: 0.002
+      weight_decay: 1.0e-05
+      batch_size: 2048
+      max_epochs: 24
+      patience: 24
+      seed: 0
+      stop_epoch: 19
+      device: null
+  segments:
+  - airports:
+    - LIRF
+    matched: false
+    model:
+      name: snap_gate
+      tol: 300
+target: residual_over_aobt
+holdout_months:
+- 1
+- 7
+clip:
+- 0
+- 172800

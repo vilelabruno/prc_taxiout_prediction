@@ -1,0 +1,10 @@
+{
+  "component": "airport_experts",
+  "trees_scale": 1.2,
+  "threads": 8,
+  "train_rows": 2084678,
+  "ranking_rows": 670790,
+  "ids_sha": "a4b0c0158abe0745",
+  "lirf_rank": 619,
+  "seconds": 485.9
+}
